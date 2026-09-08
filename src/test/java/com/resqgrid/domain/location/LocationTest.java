@@ -8,9 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LocationTest {
 
-    @Nested
-    class locationTest {
-
         @Test
         void validLocationShouldBeCreated() {
             Location location = new Location(
@@ -96,4 +93,3 @@ public class LocationTest {
             );
         }
     }
-}
