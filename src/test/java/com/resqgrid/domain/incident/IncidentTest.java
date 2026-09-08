@@ -1,5 +1,6 @@
 package com.resqgrid.domain.incident;
 
+import com.resqgrid.domain.location.Location;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -61,7 +62,7 @@ class IncidentTest {
                         "",
                         "Building fire",
                         IncidentSeverity.CRITICAL,
-                        "Mysuru",
+                        createValidLocation(),
                         LocalDateTime.now()
                 )
         );
@@ -76,7 +77,22 @@ class IncidentTest {
                         "Building Fire",
                         "Fire reported in a building",
                         null,
-                        "Mysuru",
+                        createValidLocation(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @Test
+    void nullLocationShouldBeRejected() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new Incident(
+                        1,
+                        "Building Fire",
+                        "Fire reported in a building",
+                        IncidentSeverity.CRITICAL,
+                        null,
                         LocalDateTime.now()
                 )
         );
@@ -91,7 +107,7 @@ class IncidentTest {
                         "Building Fire",
                         "Fire reported in a building",
                         IncidentSeverity.CRITICAL,
-                        "Mysuru",
+                        createValidLocation(),
                         null
                 )
         );
@@ -103,8 +119,16 @@ class IncidentTest {
                 "Building Fire",
                 "Fire reported in a commercial building",
                 IncidentSeverity.CRITICAL,
-                "Mysuru",
+                createValidLocation(),
                 LocalDateTime.now()
+        );
+    }
+
+    private Location createValidLocation() {
+        return new Location(
+                12.2958,
+                76.6394,
+                "Mysuru, Karnataka"
         );
     }
 }
