@@ -3,11 +3,11 @@ package com.resqgrid.service.incident;
 import com.resqgrid.domain.incident.Incident;
 import com.resqgrid.domain.incident.IncidentSeverity;
 import com.resqgrid.domain.incident.IncidentStatus;
+import com.resqgrid.domain.incident.IncidentType;
 import com.resqgrid.domain.location.Location;
 import com.resqgrid.exception.IncidentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.resqgrid.service.incident.IncidentService;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +38,7 @@ class IncidentServiceTest {
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt
@@ -50,6 +51,10 @@ class IncidentServiceTest {
                 IncidentSeverity.CRITICAL,
                 incident.getSeverity()
         );
+        assertEquals(
+                IncidentType.FIRE,
+                incident.getType()
+        );
     }
 
     @Test
@@ -58,6 +63,7 @@ class IncidentServiceTest {
                 1L,
                 "First Incident",
                 "First incident description",
+                IncidentType.MEDICAL,
                 IncidentSeverity.HIGH,
                 location,
                 reportedAt
@@ -69,6 +75,7 @@ class IncidentServiceTest {
                         1L,
                         "Second Incident",
                         "Second incident description",
+                        IncidentType.FIRE,
                         IncidentSeverity.LOW,
                         location,
                         reportedAt
@@ -82,6 +89,7 @@ class IncidentServiceTest {
                 1L,
                 "Medical Emergency",
                 "Patient requires immediate assistance",
+                IncidentType.MEDICAL,
                 IncidentSeverity.HIGH,
                 location,
                 reportedAt
@@ -101,6 +109,7 @@ class IncidentServiceTest {
                         0L,
                         "Invalid Incident",
                         "Invalid incident description",
+                        IncidentType.MEDICAL,
                         IncidentSeverity.MEDIUM,
                         location,
                         reportedAt
@@ -114,6 +123,7 @@ class IncidentServiceTest {
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt
@@ -139,6 +149,7 @@ class IncidentServiceTest {
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt
@@ -163,6 +174,7 @@ class IncidentServiceTest {
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt
@@ -194,6 +206,7 @@ class IncidentServiceTest {
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt
@@ -208,13 +221,13 @@ class IncidentServiceTest {
         );
     }
 
-
     @Test
     void shouldCancelIncidentSuccessfully() {
         incidentService.reportIncident(
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt
@@ -244,6 +257,7 @@ class IncidentServiceTest {
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt
@@ -266,6 +280,7 @@ class IncidentServiceTest {
                 1L,
                 "Building Fire",
                 "Fire reported in a residential building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 location,
                 reportedAt

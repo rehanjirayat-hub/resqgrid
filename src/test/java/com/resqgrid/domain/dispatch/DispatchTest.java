@@ -2,6 +2,7 @@ package com.resqgrid.domain.dispatch;
 
 import com.resqgrid.domain.incident.Incident;
 import com.resqgrid.domain.incident.IncidentSeverity;
+import com.resqgrid.domain.incident.IncidentType;
 import com.resqgrid.domain.location.Location;
 import com.resqgrid.domain.resource.Capability;
 import com.resqgrid.domain.resource.EmergencyResource;
@@ -29,6 +30,7 @@ class DispatchTest {
                 1L,
                 "Medical Emergency",
                 "Patient requires immediate assistance",
+                IncidentType.MEDICAL,
                 IncidentSeverity.HIGH,
                 createLocation(),
                 LocalDateTime.now()

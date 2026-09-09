@@ -1,14 +1,17 @@
- package com.resqgrid.domain.incident;
+package com.resqgrid.domain.incident;
 
 import com.resqgrid.domain.location.Location;
 
 import java.time.LocalDateTime;
+
+import com.resqgrid.domain.incident.IncidentType;
 
 public class Incident {
 
     private final long id;
     private final String title;
     private final String description;
+    private final IncidentType type;
     private final IncidentSeverity severity;
     private IncidentStatus status;
     private final Location location;
@@ -18,10 +21,11 @@ public class Incident {
             long id,
             String title,
             String description,
+            IncidentType type,
             IncidentSeverity severity,
             Location location,
-            LocalDateTime reportedAt
-    ) {
+            LocalDateTime reportedAt) {
+
         if (id <= 0) {
             throw new IllegalArgumentException(
                     "Incident ID must be greater than zero"
@@ -37,6 +41,12 @@ public class Incident {
         if (description == null || description.isBlank()) {
             throw new IllegalArgumentException(
                     "Incident description cannot be blank"
+            );
+        }
+
+        if (type == null) {
+            throw new IllegalArgumentException(
+                    "Incident type cannot be null"
             );
         }
 
@@ -61,6 +71,7 @@ public class Incident {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.type = type;
         this.severity = severity;
         this.status = IncidentStatus.REPORTED;
         this.location = location;
@@ -77,6 +88,10 @@ public class Incident {
 
     public String getDescription() {
         return description;
+    }
+
+    public IncidentType getType() {
+        return type;
     }
 
     public IncidentSeverity getSeverity() {
@@ -118,12 +133,16 @@ public class Incident {
         boolean validTransition =
                 (status == IncidentStatus.REPORTED
                         && newStatus == IncidentStatus.ASSESSED)
+
                         || (status == IncidentStatus.ASSESSED
                         && newStatus == IncidentStatus.DISPATCHED)
+
                         || (status == IncidentStatus.DISPATCHED
                         && newStatus == IncidentStatus.IN_PROGRESS)
+
                         || (status == IncidentStatus.IN_PROGRESS
                         && newStatus == IncidentStatus.RESOLVED)
+
                         || newStatus == IncidentStatus.CANCELLED;
 
         if (!validTransition) {
@@ -134,18 +153,5 @@ public class Incident {
         }
 
         this.status = newStatus;
-    }
-
-    @Override
-    public String toString() {
-        return "Incident{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", severity=" + severity +
-                ", status=" + status +
-                ", location=" + location +
-                ", reportedAt=" + reportedAt +
-                '}';
     }
 }

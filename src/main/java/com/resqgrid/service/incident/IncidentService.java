@@ -3,6 +3,7 @@ package com.resqgrid.service.incident;
 import com.resqgrid.domain.incident.Incident;
 import com.resqgrid.domain.incident.IncidentSeverity;
 import com.resqgrid.domain.incident.IncidentStatus;
+import com.resqgrid.domain.incident.IncidentType;
 import com.resqgrid.domain.location.Location;
 import com.resqgrid.exception.IncidentNotFoundException;
 
@@ -22,10 +23,11 @@ public class IncidentService {
             long id,
             String title,
             String description,
+            IncidentType type,
             IncidentSeverity severity,
             Location location,
-            LocalDateTime reportedAt
-    ) {
+            LocalDateTime reportedAt) {
+
         if (incidents.containsKey(id)) {
             throw new IllegalStateException(
                     "Incident with ID " + id + " already exists"
@@ -36,6 +38,7 @@ public class IncidentService {
                 id,
                 title,
                 description,
+                type,
                 severity,
                 location,
                 reportedAt
@@ -47,6 +50,7 @@ public class IncidentService {
     }
 
     public Incident findIncidentById(long id) {
+
         Incident incident = incidents.get(id);
 
         if (incident == null) {
@@ -60,15 +64,17 @@ public class IncidentService {
 
     public void changeIncidentStatus(
             long incidentId,
-            IncidentStatus newStatus
-    ) {
+            IncidentStatus newStatus) {
+
         Incident incident = findIncidentById(incidentId);
 
         incident.changeStatus(newStatus);
     }
 
     public void cancelIncident(long incidentId) {
+
         Incident incident = findIncidentById(incidentId);
+
         incident.changeStatus(IncidentStatus.CANCELLED);
     }
 }

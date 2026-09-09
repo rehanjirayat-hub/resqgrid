@@ -61,6 +61,7 @@ class IncidentTest {
                         1,
                         "",
                         "Building fire",
+                        IncidentType.FIRE,
                         IncidentSeverity.CRITICAL,
                         createValidLocation(),
                         LocalDateTime.now()
@@ -76,6 +77,7 @@ class IncidentTest {
                         1,
                         "Building Fire",
                         "Fire reported in a building",
+                        IncidentType.FIRE,
                         null,
                         createValidLocation(),
                         LocalDateTime.now()
@@ -91,6 +93,7 @@ class IncidentTest {
                         1,
                         "Building Fire",
                         "Fire reported in a building",
+                        IncidentType.FIRE,
                         IncidentSeverity.CRITICAL,
                         null,
                         LocalDateTime.now()
@@ -106,6 +109,7 @@ class IncidentTest {
                         1,
                         "Building Fire",
                         "Fire reported in a building",
+                        IncidentType.FIRE,
                         IncidentSeverity.CRITICAL,
                         createValidLocation(),
                         null
@@ -118,6 +122,7 @@ class IncidentTest {
                 1,
                 "Building Fire",
                 "Fire reported in a commercial building",
+                IncidentType.FIRE,
                 IncidentSeverity.CRITICAL,
                 createValidLocation(),
                 LocalDateTime.now()
