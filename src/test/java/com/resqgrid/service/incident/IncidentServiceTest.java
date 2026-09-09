@@ -2,10 +2,12 @@ package com.resqgrid.service.incident;
 
 import com.resqgrid.domain.incident.Incident;
 import com.resqgrid.domain.incident.IncidentSeverity;
+import com.resqgrid.domain.incident.IncidentStatus;
 import com.resqgrid.domain.location.Location;
-import com.resqgrid.service.IncidentService;
+import com.resqgrid.exception.IncidentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.resqgrid.service.incident.IncidentService;
 
 import java.time.LocalDateTime;
 
@@ -20,11 +22,13 @@ class IncidentServiceTest {
     @BeforeEach
     void setUp() {
         incidentService = new IncidentService();
+
         location = new Location(
                 12.9716,
                 77.5946,
                 "Bangalore"
         );
+
         reportedAt = LocalDateTime.now();
     }
 
@@ -84,7 +88,7 @@ class IncidentServiceTest {
         );
 
         assertEquals(
-                com.resqgrid.domain.incident.IncidentStatus.REPORTED,
+                IncidentStatus.REPORTED,
                 incident.getStatus()
         );
     }
@@ -101,6 +105,31 @@ class IncidentServiceTest {
                         location,
                         reportedAt
                 )
+        );
+    }
+
+    @Test
+    void shouldFindExistingIncidentById() {
+        Incident reportedIncident = incidentService.reportIncident(
+                1L,
+                "Building Fire",
+                "Fire reported in a residential building",
+                IncidentSeverity.CRITICAL,
+                location,
+                reportedAt
+        );
+
+        Incident foundIncident =
+                incidentService.findIncidentById(1L);
+
+        assertEquals(reportedIncident, foundIncident);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenIncidentDoesNotExist() {
+        assertThrows(
+                IncidentNotFoundException.class,
+                () -> incidentService.findIncidentById(999L)
         );
     }
 }

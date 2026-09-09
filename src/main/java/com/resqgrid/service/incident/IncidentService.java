@@ -1,8 +1,9 @@
-package com.resqgrid.service;
+package com.resqgrid.service.incident;
 
 import com.resqgrid.domain.incident.Incident;
 import com.resqgrid.domain.incident.IncidentSeverity;
 import com.resqgrid.domain.location.Location;
+import com.resqgrid.exception.IncidentNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -40,6 +41,18 @@ public class IncidentService {
         );
 
         incidents.put(id, incident);
+
+        return incident;
+    }
+
+    public Incident findIncidentById(long id) {
+        Incident incident = incidents.get(id);
+
+        if (incident == null) {
+            throw new IncidentNotFoundException(
+                    "Incident with ID " + id + " was not found"
+            );
+        }
 
         return incident;
     }
