@@ -59,8 +59,6 @@ public class ResourceDispatchService {
                         incident.getLocation()
                 );
 
-        EmergencyResource selectedResource = rankedResources.get(0);
-
         ResponseTeam selectedTeam =
                 findAvailableTeam(
                         responseTeams,
@@ -73,15 +71,58 @@ public class ResourceDispatchService {
             );
         }
 
+        /*
+         * Try the ranked resources one by one.
+         *
+         * A resource may become BUSY between the initial selection
+         * and the claim operation because another thread may have
+         * claimed it.
+         */
+        for (EmergencyResource resource : rankedResources) {
+
+            Dispatch dispatch = tryClaimResourceAndTeam(
+                    resource,
+                    selectedTeam,
+                    incident
+            );
+
+            if (dispatch != null) {
+                return dispatch;
+            }
+        }
+
+        throw new IllegalStateException(
+                "No eligible resource is available for incident "
+                        + incident.getId()
+        );
+    }
+
+    private synchronized Dispatch tryClaimResourceAndTeam(
+            EmergencyResource resource,
+            ResponseTeam team,
+            Incident incident
+    ) {
+        /*
+         * The availability check and state change happen
+         * inside the same synchronized critical section.
+         */
+        if (resource.getStatus() != ResourceStatus.AVAILABLE) {
+            return null;
+        }
+
+        if (team.getStatus() != TeamStatus.AVAILABLE) {
+            return null;
+        }
+
         Dispatch dispatch = new Dispatch(
                 System.currentTimeMillis(),
                 incident
         );
 
-        dispatch.assign(selectedResource, selectedTeam);
+        dispatch.assign(resource, team);
 
-        selectedResource.changeStatus(ResourceStatus.BUSY);
-        selectedTeam.changeStatus(TeamStatus.DEPLOYED);
+        resource.changeStatus(ResourceStatus.BUSY);
+        team.changeStatus(TeamStatus.DEPLOYED);
         incident.changeStatus(IncidentStatus.DISPATCHED);
 
         return dispatch;
