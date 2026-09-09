@@ -209,4 +209,73 @@ class IncidentServiceTest {
     }
 
 
+    @Test
+    void shouldCancelIncidentSuccessfully() {
+        incidentService.reportIncident(
+                1L,
+                "Building Fire",
+                "Fire reported in a residential building",
+                IncidentSeverity.CRITICAL,
+                location,
+                reportedAt
+        );
+
+        incidentService.cancelIncident(1L);
+
+        Incident incident = incidentService.findIncidentById(1L);
+
+        assertEquals(
+                IncidentStatus.CANCELLED,
+                incident.getStatus()
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenCancellingMissingIncident() {
+        assertThrows(
+                IncidentNotFoundException.class,
+                () -> incidentService.cancelIncident(999L)
+        );
+    }
+
+    @Test
+    void shouldRejectCancellationOfResolvedIncident() {
+        Incident incident = incidentService.reportIncident(
+                1L,
+                "Building Fire",
+                "Fire reported in a residential building",
+                IncidentSeverity.CRITICAL,
+                location,
+                reportedAt
+        );
+
+        incident.changeStatus(IncidentStatus.ASSESSED);
+        incident.changeStatus(IncidentStatus.DISPATCHED);
+        incident.changeStatus(IncidentStatus.IN_PROGRESS);
+        incident.changeStatus(IncidentStatus.RESOLVED);
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> incidentService.cancelIncident(1L)
+        );
+    }
+
+    @Test
+    void shouldRejectCancellationOfAlreadyCancelledIncident() {
+        incidentService.reportIncident(
+                1L,
+                "Building Fire",
+                "Fire reported in a residential building",
+                IncidentSeverity.CRITICAL,
+                location,
+                reportedAt
+        );
+
+        incidentService.cancelIncident(1L);
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> incidentService.cancelIncident(1L)
+        );
+    }
 }

@@ -67,4 +67,8 @@ public class IncidentService {
         incident.changeStatus(newStatus);
     }
 
+    public void cancelIncident(long incidentId) {
+        Incident incident = findIncidentById(incidentId);
+        incident.changeStatus(IncidentStatus.CANCELLED);
+    }
 }
