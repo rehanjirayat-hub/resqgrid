@@ -132,4 +132,81 @@ class IncidentServiceTest {
                 () -> incidentService.findIncidentById(999L)
         );
     }
+
+    @Test
+    void shouldChangeIncidentStatusSuccessfully() {
+        incidentService.reportIncident(
+                1L,
+                "Building Fire",
+                "Fire reported in a residential building",
+                IncidentSeverity.CRITICAL,
+                location,
+                reportedAt
+        );
+
+        incidentService.changeIncidentStatus(
+                1L,
+                IncidentStatus.ASSESSED
+        );
+
+        Incident incident = incidentService.findIncidentById(1L);
+
+        assertEquals(
+                IncidentStatus.ASSESSED,
+                incident.getStatus()
+        );
+    }
+
+    @Test
+    void shouldRejectInvalidIncidentStatusTransition() {
+        incidentService.reportIncident(
+                1L,
+                "Building Fire",
+                "Fire reported in a residential building",
+                IncidentSeverity.CRITICAL,
+                location,
+                reportedAt
+        );
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> incidentService.changeIncidentStatus(
+                        1L,
+                        IncidentStatus.RESOLVED
+                )
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenChangingStatusOfMissingIncident() {
+        assertThrows(
+                IncidentNotFoundException.class,
+                () -> incidentService.changeIncidentStatus(
+                        999L,
+                        IncidentStatus.ASSESSED
+                )
+        );
+    }
+
+    @Test
+    void shouldRejectNullIncidentStatus() {
+        incidentService.reportIncident(
+                1L,
+                "Building Fire",
+                "Fire reported in a residential building",
+                IncidentSeverity.CRITICAL,
+                location,
+                reportedAt
+        );
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> incidentService.changeIncidentStatus(
+                        1L,
+                        null
+                )
+        );
+    }
+
+
 }

@@ -2,6 +2,7 @@ package com.resqgrid.service.incident;
 
 import com.resqgrid.domain.incident.Incident;
 import com.resqgrid.domain.incident.IncidentSeverity;
+import com.resqgrid.domain.incident.IncidentStatus;
 import com.resqgrid.domain.location.Location;
 import com.resqgrid.exception.IncidentNotFoundException;
 
@@ -56,4 +57,14 @@ public class IncidentService {
 
         return incident;
     }
+
+    public void changeIncidentStatus(
+            long incidentId,
+            IncidentStatus newStatus
+    ) {
+        Incident incident = findIncidentById(incidentId);
+
+        incident.changeStatus(newStatus);
+    }
+
 }
