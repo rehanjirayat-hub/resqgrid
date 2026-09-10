@@ -13,6 +13,7 @@ import com.resqgrid.domain.resource.ResourceStatus;
 import com.resqgrid.domain.resource.ResourceType;
 import com.resqgrid.domain.team.ResponseTeam;
 import com.resqgrid.domain.team.TeamStatus;
+import com.resqgrid.service.history.HistoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,10 +26,24 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class DispatchLifecycleServiceTest {
 
     private DispatchLifecycleService lifecycleService;
+    private HistoryService historyService;
 
     @BeforeEach
     void setUp() {
-        lifecycleService = new DispatchLifecycleService();
+
+        historyService = new HistoryService();
+
+        lifecycleService =
+                new DispatchLifecycleService(historyService);
+    }
+
+    @Test
+    void constructor_shouldRejectNullHistoryService() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new DispatchLifecycleService(null)
+        );
     }
 
     @Test
@@ -54,6 +69,21 @@ class DispatchLifecycleServiceTest {
         assertEquals(
                 IncidentStatus.IN_PROGRESS,
                 dispatch.getIncident().getStatus()
+        );
+    }
+
+    @Test
+    void startDispatch_shouldRecordHistory() {
+
+        Dispatch dispatch = createAssignedDispatch();
+
+        lifecycleService.startDispatch(dispatch);
+
+        assertEquals(
+                1,
+                historyService
+                        .findHistoryByEntityId(dispatch.getId())
+                        .size()
         );
     }
 
@@ -110,6 +140,22 @@ class DispatchLifecycleServiceTest {
     }
 
     @Test
+    void completeDispatch_shouldRecordHistory() {
+
+        Dispatch dispatch = createInProgressDispatch();
+
+        lifecycleService.completeDispatch(dispatch);
+
+        assertEquals(
+                2,
+                historyService
+                        .findHistoryByEntityId(dispatch.getId())
+                        .size()
+        );
+    }
+
+
+    @Test
     void startDispatch_shouldRejectNullDispatch() {
 
         assertThrows(
@@ -145,17 +191,15 @@ class DispatchLifecycleServiceTest {
 
         Dispatch dispatch = createAssignedDispatch();
 
-        dispatch.changeStatus(DispatchStatus.CANCELLED);
+        dispatch.changeStatus(
+                DispatchStatus.CANCELLED
+        );
 
         assertThrows(
                 IllegalStateException.class,
                 () -> lifecycleService.completeDispatch(dispatch)
         );
     }
-
-    // ---------------------------------------------------------
-    // Cancellation tests
-    // ---------------------------------------------------------
 
     @Test
     void cancelDispatch_shouldRejectNullDispatch() {
@@ -255,6 +299,21 @@ class DispatchLifecycleServiceTest {
     }
 
     @Test
+    void cancelDispatch_shouldRecordHistory() {
+
+        Dispatch dispatch = createAssignedDispatch();
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertEquals(
+                1,
+                historyService
+                        .findHistoryByEntityId(dispatch.getId())
+                        .size()
+        );
+    }
+
+    @Test
     void cancelDispatch_shouldRejectCompletedDispatch() {
 
         Dispatch dispatch = createInProgressDispatch();
@@ -279,10 +338,6 @@ class DispatchLifecycleServiceTest {
                 () -> lifecycleService.cancelDispatch(dispatch)
         );
     }
-
-    // ---------------------------------------------------------
-    // Test helpers
-    // ---------------------------------------------------------
 
     private Dispatch createAssignedDispatch() {
 
