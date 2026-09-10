@@ -38,4 +38,22 @@ public class DispatchLifecycleService {
             );
         }
     }
+
+    public void cancelDispatch(Dispatch dispatch) {
+
+        validateDispatch(dispatch);
+
+        dispatch.changeStatus(DispatchStatus.CANCELLED);
+
+        if (dispatch.getResource() != null) {
+            dispatch.getResource().changeStatus(ResourceStatus.AVAILABLE);
+        }
+
+        if (dispatch.getResponseTeam() != null) {
+            dispatch.getResponseTeam().changeStatus(TeamStatus.AVAILABLE);
+        }
+
+        dispatch.getIncident().changeStatus(IncidentStatus.CANCELLED);
+    }
+
 }

@@ -153,6 +153,137 @@ class DispatchLifecycleServiceTest {
         );
     }
 
+    // ---------------------------------------------------------
+    // Cancellation tests
+    // ---------------------------------------------------------
+
+    @Test
+    void cancelDispatch_shouldRejectNullDispatch() {
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> lifecycleService.cancelDispatch(null)
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldCancelPendingDispatch() {
+
+        Incident incident = createAssessedIncident();
+
+        Dispatch dispatch = new Dispatch(
+                1L,
+                incident
+        );
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertEquals(
+                DispatchStatus.CANCELLED,
+                dispatch.getStatus()
+        );
+
+        assertEquals(
+                IncidentStatus.CANCELLED,
+                incident.getStatus()
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldCancelAssignedDispatch() {
+
+        Dispatch dispatch = createAssignedDispatch();
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertEquals(
+                DispatchStatus.CANCELLED,
+                dispatch.getStatus()
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldCancelInProgressDispatch() {
+
+        Dispatch dispatch = createInProgressDispatch();
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertEquals(
+                DispatchStatus.CANCELLED,
+                dispatch.getStatus()
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldMakeResourceAvailable() {
+
+        Dispatch dispatch = createAssignedDispatch();
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertEquals(
+                ResourceStatus.AVAILABLE,
+                dispatch.getResource().getStatus()
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldMakeResponseTeamAvailable() {
+
+        Dispatch dispatch = createAssignedDispatch();
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertEquals(
+                TeamStatus.AVAILABLE,
+                dispatch.getResponseTeam().getStatus()
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldCancelIncident() {
+
+        Dispatch dispatch = createAssignedDispatch();
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertEquals(
+                IncidentStatus.CANCELLED,
+                dispatch.getIncident().getStatus()
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldRejectCompletedDispatch() {
+
+        Dispatch dispatch = createInProgressDispatch();
+
+        lifecycleService.completeDispatch(dispatch);
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> lifecycleService.cancelDispatch(dispatch)
+        );
+    }
+
+    @Test
+    void cancelDispatch_shouldRejectAlreadyCancelledDispatch() {
+
+        Dispatch dispatch = createAssignedDispatch();
+
+        lifecycleService.cancelDispatch(dispatch);
+
+        assertThrows(
+                IllegalStateException.class,
+                () -> lifecycleService.cancelDispatch(dispatch)
+        );
+    }
+
+    // ---------------------------------------------------------
+    // Test helpers
+    // ---------------------------------------------------------
+
     private Dispatch createAssignedDispatch() {
 
         Incident incident = createAssessedIncident();
@@ -171,7 +302,9 @@ class DispatchLifecycleServiceTest {
                 responseTeam
         );
 
-        incident.changeStatus(IncidentStatus.DISPATCHED);
+        incident.changeStatus(
+                IncidentStatus.DISPATCHED
+        );
 
         return dispatch;
     }
@@ -180,11 +313,7 @@ class DispatchLifecycleServiceTest {
 
         Dispatch dispatch = createAssignedDispatch();
 
-        dispatch.changeStatus(DispatchStatus.IN_PROGRESS);
-
-        dispatch.getIncident().changeStatus(
-                IncidentStatus.IN_PROGRESS
-        );
+        lifecycleService.startDispatch(dispatch);
 
         return dispatch;
     }
@@ -201,7 +330,9 @@ class DispatchLifecycleServiceTest {
                 LocalDateTime.now()
         );
 
-        incident.changeStatus(IncidentStatus.ASSESSED);
+        incident.changeStatus(
+                IncidentStatus.ASSESSED
+        );
 
         return incident;
     }
@@ -216,7 +347,9 @@ class DispatchLifecycleServiceTest {
                 Set.of(Capability.MEDICAL_RESPONSE)
         );
 
-        resource.changeStatus(ResourceStatus.BUSY);
+        resource.changeStatus(
+                ResourceStatus.BUSY
+        );
 
         return resource;
     }
@@ -229,7 +362,9 @@ class DispatchLifecycleServiceTest {
                 Set.of(Capability.MEDICAL_RESPONSE)
         );
 
-        responseTeam.changeStatus(TeamStatus.DEPLOYED);
+        responseTeam.changeStatus(
+                TeamStatus.DEPLOYED
+        );
 
         return responseTeam;
     }
