@@ -276,38 +276,102 @@ No additional capability value may be invented during coding.
 
 ---
 
-# 10. Response Team
+## 10. Response Team 
 
-## 10.1 Responsibility
+### 10.1 Responsibility
 
-A Response Team represents personnel or an operational team participating in emergency response.
+The Response Team represents a group of personnel or operational members that may participate in emergency response operations.
 
-A response team may be associated with a resource or dispatch depending on the operational requirements.
+A Response Team is responsible for representing the team's operational state and capabilities relevant to emergency response.
 
-## 10.2 Team Characteristics
+A Response Team must not contain:
 
-A response team may contain information required to determine:
-
-* Identity.
-* Availability.
-* Capabilities.
-* Current assignments.
-* Operational status.
-
-The exact attributes and relationship structure must be finalized in the Database Design and Architecture documents before implementation.
-
-## 10.3 Team Responsibility Boundary
-
-A Response Team represents the operational team.
-
-It must not contain:
-
-* Database-access logic.
-* HTTP logic.
-* Dispatch-ranking algorithms.
-* Presentation logic.
+* Database access logic.
+* HTTP or REST handling.
+* Servlet/JSP logic.
+* Dispatch-ranking logic.
+* Persistence-specific operations.
 
 ---
+
+### 10.2 Initial Characteristics
+
+Each Response Team shall have the following domain characteristics:
+
+* Identity.
+* Operational status.
+* Capabilities.
+* Current assignments.
+
+These characteristics represent the team's current operational state.
+
+---
+
+### 10.3 Team Identity
+
+Each Response Team shall have a unique numeric identity.
+
+The identity is used to distinguish one Response Team from another and to associate the team with operational records such as dispatches.
+
+The exact persistence identifier strategy is defined separately by the Database Design and implementation architecture.
+
+---
+
+### 10.4 Team Operational Status
+
+Response Team operational status is a controlled domain value.
+
+The initial operational statuses are:
+
+* AVAILABLE
+* BUSY
+* OFFLINE
+* MAINTENANCE
+
+#### AVAILABLE
+
+The team is operational and may be considered for assignment when all other eligibility requirements are satisfied.
+
+#### BUSY
+
+The team is currently engaged in an assignment and must not be selected for a conflicting dispatch.
+
+#### OFFLINE
+
+The team is not currently available for normal dispatch operations.
+
+#### MAINTENANCE
+
+The team is temporarily unavailable for normal dispatch operations because of maintenance or an equivalent operational restriction.
+
+The Java representation of Response Team operational status shall be an enum.
+
+The exact persistence representation is defined by the Database Design and persistence implementation.
+
+---
+
+### 10.5 Team Capabilities
+
+A Response Team may possess zero or more documented Resource Capabilities.
+
+The initial capabilities are:
+
+* MEDICAL_RESPONSE
+* FIRE_RESPONSE
+* RESCUE_OPERATION
+
+Capabilities determine whether a Response Team satisfies capability requirements associated with an emergency response operation.
+
+Capability matching must occur before ranking or final selection.
+
+If a mandatory capability is required and the Response Team does not possess that capability, the team is not eligible for the operation.
+
+The Java representation shall use the existing `ResourceCapability` enum defined by the domain model.
+
+The relationship between Response Team and Resource Capability is many-to-many.
+
+The persistence representation is defined by the Database Design.
+
 
 # 11. Location
 
