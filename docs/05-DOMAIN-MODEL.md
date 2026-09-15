@@ -31,6 +31,7 @@ The domain also uses controlled values for:
 * Incident Status
 * Resource Status
 * Resource Type
+* Resource Capability
 * Dispatch Status
 
 ---
@@ -213,18 +214,65 @@ A resource's status must remain consistent with its active assignments.
 
 # 9. Resource Capability
 
+## 9.1 Responsibility
+
 A Resource Capability represents an operational ability possessed by a resource.
 
 Capabilities are used to determine whether a resource satisfies an incident's mandatory requirements.
 
-Examples may include capabilities appropriate to:
+Capability matching occurs during resource eligibility filtering before final resource ranking.
 
-* Medical response.
-* Fire response.
-* Rescue operations.
-* Other documented emergency-response requirements.
+A capability is a controlled domain value.
 
-The exact capability values must be defined before implementation and must not be invented during coding.
+## 9.2 Initial Capability Catalogue
+
+The initial documented capability values are:
+
+* `MEDICAL_RESPONSE`
+* `FIRE_RESPONSE`
+* `RESCUE_OPERATION`
+
+These values represent the initial capability catalogue for the project.
+
+## 9.3 Capability Meaning
+
+### MEDICAL_RESPONSE
+
+Represents the ability to perform emergency medical-response operations.
+
+### FIRE_RESPONSE
+
+Represents the ability to perform emergency fire-response operations.
+
+### RESCUE_OPERATION
+
+Represents the ability to perform emergency rescue operations.
+
+## 9.4 Capability Rules
+
+A resource may possess zero or more capabilities.
+
+If an incident requires a mandatory capability, the resource must possess that capability before it can be considered eligible.
+
+A resource that does not satisfy a mandatory capability requirement must not be considered eligible for that requirement.
+
+Capability matching is an eligibility condition and must occur before final ranking.
+
+Capability suitability may also be considered during ranking where the Dispatch Engine Design explicitly defines such behavior, but ranking must never make an otherwise ineligible resource eligible.
+
+## 9.5 Capability Representation
+
+Resource capabilities are represented as controlled domain values.
+
+The initial Java representation will use an enum corresponding to the documented capability values.
+
+The persistence representation will be defined consistently in the Database Design documentation.
+
+## 9.6 Capability Catalogue Changes
+
+The initial capability catalogue may be expanded later only when the corresponding documentation is updated before implementation.
+
+No additional capability value may be invented during coding.
 
 ---
 
@@ -612,8 +660,8 @@ Reporting calculations belong to the reporting/business layer rather than being 
 
 The following decisions are intentionally deferred until their respective documents are created:
 
-* Exact Java class structure.
-* Exact field names and data types.
+* Exact Java package structure.
+* Exact implementation details beyond the documented domain concepts.
 * Entity inheritance strategy.
 * Exact relationship ownership.
 * `mappedBy` decisions.
@@ -623,12 +671,19 @@ The following decisions are intentionally deferred until their respective docume
 * Lazy/eager fetching decisions.
 * Database table design.
 * Primary-key generation.
-* Exact capability representation.
+* Exact database column types.
 * Exact distance representation.
 * Exact dispatch scoring formula.
 * Exact concurrency mechanism.
 
-These decisions must be documented before implementation.
+The following decisions are **not** deferred:
+
+* Initial Resource Capability catalogue.
+* Resource Capability controlled-value meaning.
+* Resource Capability as a controlled domain value.
+* Initial Java representation of Resource Capability as an enum.
+
+These decisions are now part of the documented domain model and must be followed during implementation.
 
 ---
 
