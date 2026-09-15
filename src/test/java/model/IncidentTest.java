@@ -13,7 +13,7 @@ public class IncidentTest {
         Incident incident = new Incident(
                 "Fire emergency",
                 Severity.CRITICAL,
-                new Location()
+                new Location(12,21)
         );
 
         assertEquals(Status.REPORTED, incident.getStatus());
@@ -24,7 +24,7 @@ public class IncidentTest {
         Incident incident = new Incident(
                 "Fire emergency",
                 Severity.CRITICAL,
-                new Location()
+                new Location(12,21)
         );
 
         incident.transitionTo(Status.ASSESSED);
@@ -37,7 +37,7 @@ public class IncidentTest {
         Incident incident = new Incident(
                 "Fire emergency",
                 Severity.CRITICAL,
-                new Location()
+                new Location(21,12)
         );
 
         incident.transitionTo(Status.ASSESSED);
@@ -51,7 +51,7 @@ public class IncidentTest {
         Incident incident = new Incident(
                 "Fire emergency",
                 Severity.CRITICAL,
-                new Location()
+                new Location(12,21)
         );
 
         incident.transitionTo(Status.ASSESSED);
@@ -66,7 +66,7 @@ public class IncidentTest {
         Incident incident = new Incident(
                 "Fire emergency",
                 Severity.CRITICAL,
-                new Location()
+                new Location(12,21)
         );
 
         incident.transitionTo(Status.ASSESSED);
@@ -82,7 +82,7 @@ public class IncidentTest {
         Incident incident = new Incident(
                 "Fire emergency",
                 Severity.CRITICAL,
-                new Location()
+                new Location(21,12)
         );
 
         incident.transitionTo(Status.RESOLVED);
@@ -92,7 +92,7 @@ public class IncidentTest {
 
     @Test
     void incidentShouldStoreBasicInformation() {
-        Location location = new Location();
+        Location location = new Location(21,21);
 
         Incident incident = new Incident(
                 "Fire emergency",
