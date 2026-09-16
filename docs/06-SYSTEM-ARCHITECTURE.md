@@ -80,7 +80,7 @@ Dispatch Engine   Reporting Engine
       |
 Business Rules / Domain
       |
-Repository / Data Access
+repository / Data Access
       |
 +-----+----------------+
 |                      |
@@ -285,9 +285,9 @@ Domain objects must not depend on:
 
 ---
 
-# 12. Repository / Data Access Layer
+# 12. repository / Data Access Layer
 
-The Repository/Data Access Layer is responsible for communicating with persistent storage.
+The repository/Data Access Layer is responsible for communicating with persistent storage.
 
 Responsibilities include:
 
@@ -416,7 +416,7 @@ Application Service
   |
 Incident Domain
   |
-Repository
+repository
   |
 PostgreSQL
 ```
@@ -454,7 +454,7 @@ Transaction / Concurrency Control
   |
 Dispatch + Resource State Update
   |
-Repository
+repository
   |
 PostgreSQL
 ```
@@ -476,7 +476,7 @@ Reporting Service
   |
 Reporting Engine
   |
-Repository
+repository
   |
 PostgreSQL
 ```
@@ -604,7 +604,7 @@ SQL
   ↓
 JDBC
   ↓
-Repository/Data Access
+repository/Data Access
   ↓
 JPA Concepts
   ↓
@@ -632,7 +632,7 @@ Examples include:
 * Domain tests.
 * Business-service tests.
 * Dispatch-engine tests.
-* Repository tests.
+* repository tests.
 * Integration tests.
 * REST/API tests.
 * Concurrency tests.

@@ -700,7 +700,7 @@ Run and verify:
 * Business tests.
 * JDBC tests.
 * JPA/Hibernate tests.
-* Repository tests.
+* repository tests.
 * Integration tests.
 * REST API tests.
 * Error-handling tests.

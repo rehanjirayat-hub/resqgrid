@@ -618,7 +618,7 @@ Controller
     |
 Service
     |
-Repository
+repository
     |
 PostgreSQL
 ```

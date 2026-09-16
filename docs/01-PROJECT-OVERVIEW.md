@@ -235,7 +235,7 @@ Service / Business Logic
      |
 Domain
      |
-Repository / Data Access
+repository / Data Access
      |
 Persistence
      |

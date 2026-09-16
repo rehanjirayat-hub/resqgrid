@@ -141,7 +141,7 @@ Service / Business Layer
    |
 Domain
    |
-Repository / Data Access
+repository / Data Access
    |
 Persistence
 ```
@@ -199,7 +199,7 @@ The domain layer must not depend on HTTP concepts.
 
 ---
 
-# 8. Repository / Data Access Layer
+# 8. repository / Data Access Layer
 
 The repository/data-access layer is responsible for persistence failures.
 
