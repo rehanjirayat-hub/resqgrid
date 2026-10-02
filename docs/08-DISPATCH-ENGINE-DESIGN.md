@@ -883,7 +883,93 @@ No undocumented dispatch behavior may be introduced.
 
 ---
 
-# 44. Documentation Consistency
+# 44. Finalized Ranking and Selection Decisions
+
+Sections 16, 17, 20, 22 and 31 of this document defer specific decisions to implementation design. This section records those decisions so the engine can be implemented without inventing behaviour.
+
+## 44.1 Distance Calculation
+
+Distance is calculated in the application layer from the persisted latitude and longitude values, as permitted by section 24 of `07-DATABASE-DESIGN.md`.
+
+The Haversine formula is used because it measures great-circle distance over the Earth's surface and requires only the coordinates already stored in the `locations` table. No additional column or geospatial extension is introduced.
+
+Distance is expressed in kilometres and is used only to compare candidates that already passed eligibility filtering.
+
+## 44.2 Workload Definition
+
+Workload is derived from persisted dispatch history rather than being invented.
+
+The workload of a resource is:
+
+```text
+Workload = Active dispatch count + Completed dispatch count
+```
+
+where active means `CREATED` or `IN_PROGRESS` and completed means `COMPLETED`, matching the active-dispatch definition in section 12 of `07-DATABASE-DESIGN.md`.
+
+Workload is a count of real dispatch records. No workload column is stored, because section 31 of `07-DATABASE-DESIGN.md` prohibits undocumented workload fields.
+
+## 44.3 Ranking Order
+
+Eligible candidates are ordered by the following documented factors, applied in this order:
+
+1. Distance ascending, because a closer suitable resource may respond faster.
+2. Workload ascending, because a less heavily loaded resource is preferable when otherwise comparable.
+3. Resource ID ascending, as the final deterministic tie-breaker.
+
+Incident severity is used as documented to describe response priority, but it does not order candidates against each other. Severity applies to every candidate for a given incident equally, so using it to rank resources would not change the ordering. Severity is therefore not used as a ranking factor.
+
+Mandatory eligibility is evaluated before this ordering begins, so an ineligible candidate is never ranked.
+
+This ordering matches the conceptual flow in section 22, where distance is compared first, then workload, then suitability, with tie-breaking applied last.
+
+## 44.4 Tie-Breaking
+
+Tie-breaking is deterministic and never depends on database or collection ordering.
+
+When distance and workload are equal, the resource with the lower ID is selected.
+
+The lower ID is chosen because it is a stable, documented property of the resource and makes repeated identical requests produce identical results, as required by section 19.
+
+## 44.5 Retry Behavior
+
+Section 31 defers the retry count and strategy. The finalized behavior is:
+
+```text
+Rank eligible candidates
+        |
+        v
+Attempt assignment with best candidate
+        |
+   Succeeded -> Return dispatch
+        |
+      Failed
+        |
+        v
+Attempt assignment with next candidate
+        |
+        ... repeats ...
+        |
+   Candidates exhausted -> Report no assignment
+```
+
+Each eligible candidate is attempted at most once. The total number of attempts can therefore never exceed the number of eligible candidates, which prevents the uncontrolled retry loops that section 31 warns against.
+
+A candidate that fails assignment is not retried, because its resource is no longer available and retrying would predictably fail again.
+
+## 44.6 Result Reporting
+
+The engine reports one of three outcomes, matching section 13:
+
+* A dispatch was created.
+* No eligible resource existed.
+* Every eligible resource was claimed by another operation before it could be assigned.
+
+The engine never reports success when no dispatch was created.
+
+---
+
+# 45. Documentation Consistency
 
 This document must remain consistent with:
 
