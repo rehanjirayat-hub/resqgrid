@@ -979,7 +979,57 @@ If a new endpoint is required:
 
 ---
 
-# 37. Documentation Consistency
+# 37. Finalized API Implementation Decisions
+
+Sections 5, 17 and 20 defer specific decisions to implementation. This section records them so the API can be implemented consistently.
+
+## 37.1 JSON Field Naming
+
+Section 5 requires the naming convention to be selected before implementation. ResQGrid uses `lowerCamelCase` for JSON field names in both requests and responses.
+
+Controlled domain values such as severities, statuses and resource types are returned as the documented uppercase enum names, because those values are part of the documented database and domain representation and must remain consistent across the system.
+
+## 37.2 REST Implementation Stack
+
+The documented technology set in section 28 of `06-SYSTEM-ARCHITECTURE.md` lists REST and JSON but no JSON or web framework. The REST API is therefore implemented using the HTTP server included in Java 21, with request routing, validation and JSON encoding implemented directly in the project.
+
+This choice adds no dependency that is absent from the documented technology set.
+
+The Servlet and JSP layer required by phase 10 of the roadmap remains separate from this REST API layer, and is introduced at that point.
+
+## 37.3 JSON Encoding
+
+A small internal JSON writer and reader support the request and response bodies. They handle the value types the documented endpoints need, and no general-purpose serialization framework is introduced.
+
+## 37.4 Report Fields
+
+Section 17 requires the exact report fields to be defined. The reporting endpoints return the values finalized in section 18 of `04-BUSINESS-RULES.md`:
+
+* Incident reports return total incidents, counts per status and counts per severity.
+* Dispatch reports return total dispatches, active dispatches and counts per status.
+* Resource reports return total resources, counts per status, resources not available, and per-resource workload.
+
+## 37.5 Pagination
+
+Section 19 defers pagination. Pagination is not introduced in the initial API, because no documented requirement establishes a page size or result-volume limit. List endpoints return all matching records.
+
+## 37.6 Status Code Convention
+
+Section 20 notes that the final convention must remain consistent. The selected convention is:
+
+* `200` for successful retrieval and successful operations that return a body.
+* `201` when a resource is created.
+* `204` for successful operations that return no body.
+* `400` when the request structure or supplied data is invalid.
+* `404` when the requested resource does not exist.
+* `409` when a dispatch cannot be completed because the operational state changed, or when a state transition is not permitted.
+* `500` for unexpected failures.
+
+The optional `422` status in section 20 is not used, so that business-rule failures that arise from application state are reported as `409` consistently rather than split across two codes.
+
+---
+
+# 38. Documentation Consistency
 
 This document must remain consistent with:
 
