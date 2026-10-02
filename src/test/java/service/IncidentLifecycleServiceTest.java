@@ -1,5 +1,7 @@
 package service;
 
+import exception.InvalidStateTransitionException;
+import exception.ResourceNotFoundException;
 import model.Incident;
 import model.Location;
 import model.Severity;
@@ -75,7 +77,7 @@ public class IncidentLifecycleServiceTest {
 
         lifecycleService.assess(id);
 
-        assertThrows(IllegalStateException.class, () -> lifecycleService.assess(id));
+        assertThrows(InvalidStateTransitionException.class, () -> lifecycleService.assess(id));
     }
 
     @Test
@@ -84,7 +86,7 @@ public class IncidentLifecycleServiceTest {
         long id = createIncident();
 
         assertThrows(
-                IllegalStateException.class,
+                InvalidStateTransitionException.class,
                 () -> lifecycleService.determineRequirements(id)
         );
     }
@@ -97,7 +99,7 @@ public class IncidentLifecycleServiceTest {
         lifecycleService.assess(id);
         lifecycleService.determineRequirements(id);
 
-        assertThrows(IllegalStateException.class, () -> lifecycleService.resolve(id));
+        assertThrows(InvalidStateTransitionException.class, () -> lifecycleService.resolve(id));
     }
 
     @Test
@@ -106,7 +108,7 @@ public class IncidentLifecycleServiceTest {
         long id = createIncident();
 
         assertThrows(
-                IllegalStateException.class,
+                InvalidStateTransitionException.class,
                 () -> lifecycleService.determineRequirements(id)
         );
 
@@ -121,7 +123,7 @@ public class IncidentLifecycleServiceTest {
     void transitionsShouldRejectUnknownIncident() {
 
         assertThrows(
-                IllegalStateException.class,
+                ResourceNotFoundException.class,
                 () -> lifecycleService.assess(-1)
         );
     }

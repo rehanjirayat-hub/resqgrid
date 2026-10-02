@@ -1,5 +1,7 @@
 package service;
 
+import exception.InvalidStateTransitionException;
+import exception.ResourceNotFoundException;
 import model.DispatchStatus;
 import model.ResourceStatus;
 import repository.DispatchRepository;
@@ -56,7 +58,7 @@ public class DispatchLifecycleService {
             try {
 
                 var dispatch = dispatchRepository.findById(dispatchId)
-                        .orElseThrow(() -> new IllegalStateException(
+                        .orElseThrow(() -> new ResourceNotFoundException(
                                 "Dispatch does not exist: " + dispatchId
                         ));
 
@@ -64,7 +66,7 @@ public class DispatchLifecycleService {
 
                     connection.rollback();
 
-                    throw new IllegalStateException(
+                    throw new InvalidStateTransitionException(
                             "Dispatch " + dispatchId + " is "
                                     + dispatch.getStatus() + " and cannot become "
                                     + newStatus + "."

@@ -1,5 +1,7 @@
 package service;
 
+import exception.InvalidStateTransitionException;
+import exception.ResourceNotFoundException;
 import model.Incident;
 import model.Status;
 import repository.IncidentRepository;
@@ -51,7 +53,7 @@ public class IncidentLifecycleService {
             try {
 
                 Incident incident = incidentRepository.findById(incidentId)
-                        .orElseThrow(() -> new IllegalStateException(
+                        .orElseThrow(() -> new ResourceNotFoundException(
                                 "Incident does not exist: " + incidentId
                         ));
 
@@ -59,7 +61,7 @@ public class IncidentLifecycleService {
 
                     connection.rollback();
 
-                    throw new IllegalStateException(
+                    throw new InvalidStateTransitionException(
                             "Incident " + incidentId + " is "
                                     + incident.getStatus() + " and cannot become "
                                     + newStatus + "."

@@ -1,5 +1,7 @@
 package service;
 
+import exception.InvalidStateTransitionException;
+import exception.ResourceNotFoundException;
 import model.Dispatch;
 import model.DispatchStatus;
 import model.EmergencyResource;
@@ -99,7 +101,7 @@ public class DispatchLifecycleServiceTest {
         lifecycleService.start(dispatchId);
 
         assertThrows(
-                IllegalStateException.class,
+                InvalidStateTransitionException.class,
                 () -> lifecycleService.start(dispatchId)
         );
     }
@@ -166,7 +168,7 @@ public class DispatchLifecycleServiceTest {
         long dispatchId = assignResource(createIncident(), createResource());
 
         assertThrows(
-                IllegalStateException.class,
+                InvalidStateTransitionException.class,
                 () -> lifecycleService.complete(dispatchId)
         );
     }
@@ -175,7 +177,7 @@ public class DispatchLifecycleServiceTest {
     void completeShouldRejectUnknownDispatch() {
 
         assertThrows(
-                IllegalStateException.class,
+                ResourceNotFoundException.class,
                 () -> lifecycleService.complete(-1)
         );
     }
