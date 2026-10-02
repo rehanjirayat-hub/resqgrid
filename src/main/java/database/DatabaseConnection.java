@@ -5,10 +5,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String DB_URL = "jdbc:postgresql://localhost:5432/resqgrid";
-    private static final String DB_USERNAME = "postgres";
-    private static final String DB_PASSWORD = System.getenv("RESQGRID_DB_PASSWORD");
 
+    private static final String DB_URL =
+            System.getenv().getOrDefault(
+                    "RESQGRID_DB_URL",
+                    "jdbc:postgresql://localhost:5432/resqgrid"
+            );
+
+    private static final String DB_USERNAME =
+            System.getenv().getOrDefault("RESQGRID_DB_USER", "postgres");
+
+    private static final String DB_PASSWORD =
+            System.getenv().getOrDefault("RESQGRID_DB_PASSWORD", "");
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
