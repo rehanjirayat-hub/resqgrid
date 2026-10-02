@@ -1,0 +1,141 @@
+:root {
+    --border: #d7dce2;
+    --text: #1f2933;
+    --muted: #62707f;
+    --accent: #1b4f72;
+    --available: #1e7a46;
+    --busy: #9a6700;
+    --offline: #8a2f2f;
+    --critical: #b02a2a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0 2rem 3rem;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background: #f7f9fb;
+}
+
+header {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--accent);
+}
+
+nav a {
+    margin-right: 1rem;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+h2 {
+    font-size: 1.15rem;
+    margin: 0 0 1rem;
+}
+
+form {
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+label {
+    color: var(--muted);
+}
+
+select,
+button {
+    font: inherit;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: #fff;
+}
+
+button {
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid var(--border);
+}
+
+th,
+td {
+    text-align: left;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92rem;
+}
+
+th {
+    background: #eef2f6;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.empty {
+    color: var(--muted);
+    font-style: italic;
+}
+
+.status-AVAILABLE {
+    color: var(--available);
+}
+
+.status-BUSY,
+.status-IN_PROGRESS {
+    color: var(--busy);
+}
+
+.status-OFFLINE,
+.status-MAINTENANCE {
+    color: var(--offline);
+}
+
+.status-COMPLETED {
+    color: var(--muted);
+}
+
+.severity-CRITICAL {
+    color: var(--critical);
+    font-weight: 600;
+}
+
+.severity-HIGH {
+    color: #b35c00;
+}
+
+.severity-MEDIUM {
+    color: var(--busy);
+}
+
+.severity-LOW {
+    color: var(--muted);
+}

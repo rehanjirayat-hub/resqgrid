@@ -35,6 +35,53 @@
             <version>6.6.15.Final</version>
         </dependency>
 
+        <!--
+            Servlet container for the JSP MVC layer. Scope is provided because
+            the application is expected to run inside Tomcat rather than
+            carrying its own container.
+        -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet.jsp</groupId>
+            <artifactId>jakarta.servlet.jsp-api</artifactId>
+            <version>3.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>10.1.41</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Compiles and serves the JSP views during tests. -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <version>10.1.41</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Tag library used by the JSP views to avoid scriptlets. -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
     </dependencies>
 
     <properties>

@@ -75,6 +75,14 @@ public class DispatchService {
         return dispatchRepository.findByIncident(incidentId);
     }
 
+    public List<Dispatch> findByResource(long resourceId) {
+        return dispatchRepository.findByResource(resourceId);
+    }
+
+    public Optional<Dispatch> dispatchById(long dispatchId) {
+        return dispatchRepository.findById(dispatchId);
+    }
+
     public void start(long dispatchId) {
         lifecycleService.start(dispatchId);
     }
