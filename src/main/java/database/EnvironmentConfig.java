@@ -15,14 +15,14 @@ import java.util.Properties;
  * Values already present in the real environment always win, so an explicit
  * {@code RESQGRID_DB_PASSWORD} export overrides anything in the file.
  */
-final class EnvironmentConfig {
+public final class EnvironmentConfig {
 
     private static final Map<String, String> VALUES = load();
 
     private EnvironmentConfig() {
     }
 
-    static String get(String name, String defaultValue) {
+    public static String get(String name, String defaultValue) {
         return VALUES.getOrDefault(name, defaultValue);
     }
 
