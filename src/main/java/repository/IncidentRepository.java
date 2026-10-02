@@ -2,12 +2,19 @@ package repository;
 
 import database.DatabaseConnection;
 import model.Incident;
+import model.Location;
+import model.Severity;
+import model.Status;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class IncidentRepository {
 
@@ -40,6 +47,94 @@ public class IncidentRepository {
 
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save incident.", e);
+        }
+    }
+
+    public Optional<Incident> findById(long id) {
+
+        String sql = """
+            SELECT i.id, i.description, i.severity, i.status, i.created_at,
+                   l.latitude, l.longitude
+            FROM incidents i
+            JOIN locations l ON l.id = i.location_id
+            WHERE i.id = ?
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+
+                if (!resultSet.next()) {
+                    return Optional.empty();
+                }
+
+                Location location = new Location(
+                        resultSet.getDouble("latitude"),
+                        resultSet.getDouble("longitude")
+                );
+
+                Incident incident = new Incident(
+                        resultSet.getLong("id"),
+                        resultSet.getString("description"),
+                        Severity.valueOf(resultSet.getString("severity")),
+                        Status.valueOf(resultSet.getString("status")),
+                        location,
+                        resultSet.getObject("created_at", LocalDateTime.class)
+                );
+
+                return Optional.of(incident);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load incident.", e);
+        }
+    }
+
+    public List<Incident> findByStatus(Status status) {
+
+        String sql = """
+            SELECT i.id, i.description, i.severity, i.status, i.created_at,
+                   l.latitude, l.longitude
+            FROM incidents i
+            JOIN locations l ON l.id = i.location_id
+            WHERE i.status = ?
+            ORDER BY i.id
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, status.name());
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+
+                List<Incident> incidents = new ArrayList<>();
+
+                while (resultSet.next()) {
+
+                    Location location = new Location(
+                            resultSet.getDouble("latitude"),
+                            resultSet.getDouble("longitude")
+                    );
+
+                    incidents.add(new Incident(
+                            resultSet.getLong("id"),
+                            resultSet.getString("description"),
+                            Severity.valueOf(resultSet.getString("severity")),
+                            Status.valueOf(resultSet.getString("status")),
+                            location,
+                            resultSet.getObject("created_at", LocalDateTime.class)
+                    ));
+                }
+
+                return incidents;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load incidents.", e);
         }
     }
 

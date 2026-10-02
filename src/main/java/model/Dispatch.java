@@ -23,6 +23,21 @@ public class Dispatch {
         this.createdAt = LocalDateTime.now();
     }
 
+    public Dispatch(long id,
+                    Incident incident,
+                    EmergencyResource resource,
+                    ResponseTeam responseTeam,
+                    DispatchStatus status,
+                    LocalDateTime createdAt) {
+
+        this.id = id;
+        this.incident = incident;
+        this.resource = resource;
+        this.responseTeam = responseTeam;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
     public long getId() {
         return id;
     }
