@@ -29,4 +29,15 @@ public class EmergencyResource {
         this.location = location;
         this.status = ResourceStatus.AVAILABLE;
     }
+
+    public EmergencyResource(long id,
+                             ResourceType type,
+                             ResourceStatus status,
+                             Location location) {
+
+        this.id = id;
+        this.type = type;
+        this.status = status;
+        this.location = location;
+    }
 }
