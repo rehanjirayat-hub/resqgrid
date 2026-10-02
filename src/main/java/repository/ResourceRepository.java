@@ -114,6 +114,59 @@ public class ResourceRepository {
         }
     }
 
+    public List<EmergencyResource> findAll() {
+
+        String sql = """
+            SELECT r.id, r.type, r.status, r.location_id,
+                   l.latitude, l.longitude
+            FROM resources r
+            JOIN locations l ON l.id = r.location_id
+            ORDER BY r.id
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            List<EmergencyResource> resources = new ArrayList<>();
+
+            while (resultSet.next()) {
+                resources.add(map(resultSet));
+            }
+
+            return resources;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load resources.", e);
+        }
+    }
+
+    /**
+     * @return the number of dispatch records for the resource, in any status
+     */
+    public long countDispatches(long resourceId) {
+
+        String sql = "SELECT COUNT(*) FROM dispatches WHERE resource_id = ?";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, resourceId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+
+                if (resultSet.next()) {
+                    return resultSet.getLong(1);
+                }
+
+                return 0;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to count resource dispatches.", e);
+        }
+    }
+
     public List<EmergencyResource> findByStatus(ResourceStatus status) {
 
         String sql = """
