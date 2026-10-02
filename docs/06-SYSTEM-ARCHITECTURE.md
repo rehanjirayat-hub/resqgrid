@@ -589,6 +589,20 @@ Persistence-specific concerns must not unnecessarily leak into business decision
 
 The exact degree of separation will be documented during database and implementation design.
 
+### 24.1 Degree of Separation Applied
+
+ResQGrid keeps the domain model and the JPA persistence model as **separate classes**.
+
+The domain classes in `model` describe business concepts and remain free of persistence annotations. The JPA entities in `persistence.entity` describe how those concepts are stored, using the tables and relationships defined in `07-DATABASE-DESIGN.md`.
+
+This separation is applied because:
+
+* The domain classes are also used by the JDBC repositories, which must keep working exactly as implemented. Adding ORM requirements such as a no-argument constructor and non-final fields would weaken the existing domain objects for the benefit of a second persistence mechanism.
+* Domain objects carry invariants and lifecycle behaviour that an ORM proxy must not be able to bypass.
+* The separation keeps the documented responsibility boundary in section 6.3 of `05-DOMAIN-MODEL.md`, which forbids infrastructure concerns inside domain classes.
+
+The trade-off is that the two models are mapped between rather than shared. This is accepted deliberately, because the project intends to demonstrate both persistence approaches explicitly, as required by section 25.
+
 ---
 
 # 25. JDBC and JPA/Hibernate Learning Strategy
