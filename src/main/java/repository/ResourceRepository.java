@@ -166,6 +166,35 @@ public class ResourceRepository {
         }
     }
 
+    /**
+     * Transitions a resource out of {@code expectedStatus} only while it is still
+     * in that state.
+     *
+     * PostgreSQL evaluates this statement atomically, so when two transactions
+     * attempt the same transition exactly one of them changes the row. The
+     * boolean result reports which outcome occurred, and the caller is
+     * responsible for rolling back when it returns {@code false}.
+     *
+     * @return {@code true} if this caller performed the transition
+     */
+    public boolean transitionStatusIfCurrent(long id,
+                                             ResourceStatus expectedStatus,
+                                             ResourceStatus newStatus,
+                                             Connection connection)
+            throws SQLException {
+
+        String sql = "UPDATE resources SET status = ? WHERE id = ? AND status = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, newStatus.name());
+            statement.setLong(2, id);
+            statement.setString(3, expectedStatus.name());
+
+            return statement.executeUpdate() == 1;
+        }
+    }
+
     private EmergencyResource map(ResultSet resultSet) throws SQLException {
 
         Location location = new Location(

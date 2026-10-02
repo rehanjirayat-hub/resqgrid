@@ -39,6 +39,32 @@ public class DispatchRepository {
 
     public long save(Dispatch dispatch) {
 
+        try (Connection connection = DatabaseConnection.getConnection()) {
+
+            connection.setAutoCommit(false);
+
+            try {
+
+                long dispatchId = save(dispatch, connection);
+
+                connection.commit();
+
+                return dispatchId;
+
+            } catch (SQLException e) {
+
+                connection.rollback();
+
+                throw e;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to save dispatch.", e);
+        }
+    }
+
+    public long save(Dispatch dispatch, Connection connection) throws SQLException {
+
         String sql = """
             INSERT INTO dispatches (
                 incident_id,
@@ -50,11 +76,10 @@ public class DispatchRepository {
             VALUES (?, ?, ?, ?, ?)
             """;
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     sql,
-                     Statement.RETURN_GENERATED_KEYS
-             )) {
+        try (PreparedStatement statement = connection.prepareStatement(
+                sql,
+                Statement.RETURN_GENERATED_KEYS
+        )) {
 
             statement.setLong(1, dispatch.getIncident().getId());
             statement.setLong(2, dispatch.getResource().getId());
@@ -76,9 +101,6 @@ public class DispatchRepository {
 
                 return resultSet.getLong(1);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to save dispatch.", e);
         }
     }
 
