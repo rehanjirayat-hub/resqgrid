@@ -6,17 +6,16 @@ import java.sql.SQLException;
 
 public class DatabaseConnection {
 
-    private static final String DB_URL =
-            System.getenv().getOrDefault(
-                    "RESQGRID_DB_URL",
-                    "jdbc:postgresql://localhost:5432/resqgrid"
-            );
+    private static final String DB_URL = EnvironmentConfig.get(
+            "RESQGRID_DB_URL",
+            "jdbc:postgresql://localhost:5432/resqgrid"
+    );
 
     private static final String DB_USERNAME =
-            System.getenv().getOrDefault("RESQGRID_DB_USER", "postgres");
+            EnvironmentConfig.get("RESQGRID_DB_USER", "postgres");
 
     private static final String DB_PASSWORD =
-            System.getenv().getOrDefault("RESQGRID_DB_PASSWORD", "");
+            EnvironmentConfig.get("RESQGRID_DB_PASSWORD", "");
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
