@@ -127,6 +127,22 @@ public class DispatchRepository {
         }
     }
 
+    public List<Dispatch> findAll() {
+
+        String sql = baseSelect() + " ORDER BY d.id";
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            return collect(resultSet);
+        }
+
+        catch (SQLException e) {
+            throw new RuntimeException("Failed to load dispatches.", e);
+        }
+    }
+
     public List<Dispatch> findByIncident(long incidentId) {
 
         return findByColumn("d.incident_id", incidentId, "Failed to load dispatches.");

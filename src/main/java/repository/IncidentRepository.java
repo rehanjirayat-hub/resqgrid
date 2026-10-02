@@ -93,6 +93,46 @@ public class IncidentRepository {
         }
     }
 
+    public List<Incident> findAll() {
+
+        String sql = """
+            SELECT i.id, i.description, i.severity, i.status, i.created_at,
+                   l.latitude, l.longitude
+            FROM incidents i
+            JOIN locations l ON l.id = i.location_id
+            ORDER BY i.id
+            """;
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            List<Incident> incidents = new ArrayList<>();
+
+            while (resultSet.next()) {
+
+                Location location = new Location(
+                        resultSet.getDouble("latitude"),
+                        resultSet.getDouble("longitude")
+                );
+
+                incidents.add(new Incident(
+                        resultSet.getLong("id"),
+                        resultSet.getString("description"),
+                        Severity.valueOf(resultSet.getString("severity")),
+                        Status.valueOf(resultSet.getString("status")),
+                        location,
+                        resultSet.getObject("created_at", LocalDateTime.class)
+                ));
+            }
+
+            return incidents;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to load incidents.", e);
+        }
+    }
+
     public void updateStatus(long id, Status status) {
 
         try (Connection connection = DatabaseConnection.getConnection()) {
