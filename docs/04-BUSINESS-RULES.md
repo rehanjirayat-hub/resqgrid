@@ -440,6 +440,37 @@ Dispatch statistics must be calculated from valid dispatch records.
 
 Incident statistics must be based on valid incident information and documented status/severity rules.
 
+### BR-REPORT-05 — Finalized Report Calculations
+
+`FR-17` requires the exact report calculations to be defined in this document. The initial reports are defined below. Every value is derived from stored records and no report introduces new stored fields.
+
+#### Incident Statistics
+
+* Total incident count.
+* Incident count per incident status.
+* Incident count per severity.
+
+#### Dispatch Statistics
+
+* Total dispatch count.
+* Dispatch count per dispatch status.
+* Count of active dispatches, meaning `CREATED` and `IN_PROGRESS` only.
+
+#### Resource Utilization
+
+* Total resource count.
+* Resource count per operational status.
+* Number of resources currently in a non-`AVAILABLE` state.
+
+#### Resource Workload
+
+Per-resource dispatch count, using the workload definition finalized in `08-DISPATCH-ENGINE-DESIGN.md`. Resources with no dispatch history are included with a workload of zero rather than being omitted.
+
+#### Historical Dispatch Activity
+
+* Dispatch records grouped by status, retaining completed dispatches as history.
+* Completed dispatch count per resource.
+
 ---
 
 # 19. Validation Rules
