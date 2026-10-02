@@ -904,7 +904,68 @@ No concurrency behavior may be silently changed during coding.
 
 ---
 
-# 46. Documentation Consistency
+# 46. Selected Concurrency Mechanism
+
+This section records the mechanism selected for implementation, as required by section 22.
+
+## 46.1 Decision
+
+ResQGrid uses an **atomic conditional state transition** in a single database transaction.
+
+The resource status update is expressed as a conditional statement that only succeeds while the resource is still in the expected state:
+
+```sql
+UPDATE resources SET status = 'BUSY'
+WHERE id = ? AND status = 'AVAILABLE'
+```
+
+The operation is judged successful by the number of rows it actually changed, not by the absence of an exception.
+
+## 46.2 Why This Mechanism
+
+The conditional transition satisfies the required guarantee from section 11:
+
+> At most one concurrent transaction can successfully transition a particular available resource into a conflicting assigned state.
+
+PostgreSQL evaluates the update atomically. When two transactions attempt the same transition, only one can observe the row still in `AVAILABLE` and change it. The other updates zero rows, so it cannot create a conflicting active dispatch.
+
+This approach was selected over the alternatives for the following reasons:
+
+* **Pessimistic locking** was not selected because it requires holding a row lock for the duration of the assignment transaction, which increases lock contention and introduces deadlock risk when operations lock multiple resources in different orders.
+* **Optimistic concurrency control with a version column** was not selected because it would require adding an undocumented column to the `resources` table. Section 31 of `07-DATABASE-DESIGN.md` prohibits introducing undocumented columns.
+* **The conditional transition achieves the same correctness guarantee** because the conditional predicate itself expresses the expected prior state. A stale read cannot produce a successful assignment, so lost updates are prevented without a version column.
+
+## 46.3 Transaction Boundary
+
+Dispatch creation and the resource state transition must occur in one transaction:
+
+```text
+Verify resource eligibility
+        |
+Create dispatch record
+        |
+Conditional transition resource to BUSY
+        |
+Commit
+```
+
+If the conditional transition affects zero rows, the transaction must roll back so that no dispatch record is left behind without a corresponding resource state change, satisfying section 16.
+
+## 46.4 Isolation Level
+
+The default PostgreSQL isolation level of `READ COMMITTED` is used.
+
+The conditional transition does not depend on a stricter isolation level because correctness comes from the conditional predicate and the row-count check rather than from what a transaction is able to observe during the transaction. This avoids holding snapshots for the duration of the assignment transaction.
+
+## 46.5 Scope
+
+This mechanism protects the assignment operation only.
+
+The dispatch engine's filtering and ranking stages may still read a resource as eligible when a concurrent transaction is assigning it. This is acceptable because section 17 already requires final assignment verification immediately before assignment, and the conditional transition provides the actual protection.
+
+---
+
+# 47. Documentation Consistency
 
 This document must remain consistent with:
 
