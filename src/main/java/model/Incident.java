@@ -41,6 +41,20 @@ public class Incident {
         this.status = Status.REPORTED;
         this.createdAt = LocalDateTime.now();
     }
+    public Incident(long id,
+                    String description,
+                    Severity severity,
+                    Status status,
+                    Location location,
+                    LocalDateTime createdAt) {
+
+        this.id = id;
+        this.description = description;
+        this.severity = severity;
+        this.status = status;
+        this.location = location;
+        this.createdAt = createdAt;
+    }
 
 
     public void transitionTo(Status newStatus) {

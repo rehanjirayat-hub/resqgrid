@@ -8,18 +8,17 @@ import java.util.Optional;
 
 public class LocationRepository {
 
-    public long save(Location location) {
+    public long save(Location location, Connection connection) {
 
         String sql = """
             INSERT INTO locations (latitude, longitude)
             VALUES (?, ?)
             """;
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     sql,
-                     Statement.RETURN_GENERATED_KEYS
-             )) {
+        try (PreparedStatement statement = connection.prepareStatement(
+                sql,
+                Statement.RETURN_GENERATED_KEYS
+        )) {
 
             statement.setDouble(1, location.getLatitude());
             statement.setDouble(2, location.getLongitude());
@@ -39,6 +38,15 @@ public class LocationRepository {
                 throw new SQLException("Generated location ID was not returned.");
             }
 
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to save location.", e);
+        }
+    }
+
+    public long save(Location location) {
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            return save(location, connection);
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save location.", e);
         }
