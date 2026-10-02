@@ -158,21 +158,32 @@ public class DispatchRepository {
 
     public void updateStatus(long id, DispatchStatus status) {
 
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            updateStatus(id, status, connection);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update dispatch status.", e);
+        }
+    }
+
+    /**
+     * Updates the dispatch status using a caller-supplied connection so the
+     * change participates in that caller's transaction.
+     */
+    public void updateStatus(long id,
+                             DispatchStatus status,
+                             Connection connection) throws SQLException {
+
         String sql = "UPDATE dispatches SET status = ? WHERE id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, status.name());
             statement.setLong(2, id);
 
             if (statement.executeUpdate() != 1) {
-                throw new RuntimeException(
+                throw new SQLException(
                         "Dispatch status was not updated for ID " + id + ".");
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to update dispatch status.", e);
         }
     }
 

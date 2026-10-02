@@ -93,6 +93,36 @@ public class IncidentRepository {
         }
     }
 
+    public void updateStatus(long id, Status status) {
+
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            updateStatus(id, status, connection);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update incident status.", e);
+        }
+    }
+
+    /**
+     * Updates the incident status using a caller-supplied connection so the
+     * change participates in that caller's transaction.
+     */
+    public void updateStatus(long id, Status status, Connection connection)
+            throws SQLException {
+
+        String sql = "UPDATE incidents SET status = ? WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, status.name());
+            statement.setLong(2, id);
+
+            if (statement.executeUpdate() != 1) {
+                throw new SQLException(
+                        "Incident status was not updated for ID " + id + ".");
+            }
+        }
+    }
+
     public List<Incident> findByStatus(Status status) {
 
         String sql = """

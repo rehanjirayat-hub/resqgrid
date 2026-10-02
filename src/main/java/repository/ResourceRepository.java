@@ -148,21 +148,32 @@ public class ResourceRepository {
 
     public void updateStatus(long id, ResourceStatus status) {
 
+        try (Connection connection = DatabaseConnection.getConnection()) {
+            updateStatus(id, status, connection);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update resource status.", e);
+        }
+    }
+
+    /**
+     * Updates the resource status using a caller-supplied connection so the
+     * change participates in that caller's transaction.
+     */
+    public void updateStatus(long id,
+                             ResourceStatus status,
+                             Connection connection) throws SQLException {
+
         String sql = "UPDATE resources SET status = ? WHERE id = ?";
 
-        try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
             statement.setString(1, status.name());
             statement.setLong(2, id);
 
             if (statement.executeUpdate() != 1) {
-                throw new RuntimeException(
+                throw new SQLException(
                         "Resource status was not updated for ID " + id + ".");
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to update resource status.", e);
         }
     }
 
