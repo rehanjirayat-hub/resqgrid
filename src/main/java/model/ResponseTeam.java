@@ -17,6 +17,13 @@ public class ResponseTeam {
         this.currentAssignments = new ArrayList<>();
     }
 
+    public ResponseTeam(long id, ResponseTeamStatus status) {
+        this.id = id;
+        this.status = status;
+        this.capabilities = new ArrayList<>();
+        this.currentAssignments = new ArrayList<>();
+    }
+
     public long getId() {
         return id;
     }
